@@ -12,10 +12,10 @@ import (
 var Log *logrus.Logger
 
 func Init() {
-	// Load .env file
-	err := godotenv.Load()
+	// Load config.env file
+	err := godotenv.Load("config.env")
 	if err != nil {
-		log.Println("No .env file found, using system environment variables")
+		log.Println("No config.env file found, using system environment variables")
 	}
 
 	// Read environment variables

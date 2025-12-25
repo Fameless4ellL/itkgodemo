@@ -7,10 +7,10 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
       - POSTGRES_DB=${DB_NAME:-postgres}
     env_file:
-      - ./.env
+      - ./config.env
     volumes:
       - postgresql-data:/var/lib/postgresql
-        - ./.env:/app/.env
+      - ./config.env:/app/config.env
     restart: on-failure
 
   app:
@@ -22,9 +22,9 @@ services:
     ports:
       - ${PORT:-8080}:${PORT:-8080}
     env_file:
-      - ./.env
+      - ./config.env
     volumes:
-      - ./.env:/app/.env
+      - ./config.env:/app/config.env
 
 volumes:
   postgresql-data:
