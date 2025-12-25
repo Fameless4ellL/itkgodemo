@@ -82,9 +82,11 @@ func TestHandler(t *testing.T) {
 		h := &Handler{uc: m}
 		m.On("GetWallet", mockID).Return(&domain.Wallet{ID: mockID, Balance: 100}, nil)
 
-		req := httptest.NewRequest(http.MethodGet, "/?id="+mockID.String(), nil)
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
+		c.SetParamNames("id")
+		c.SetParamValues(mockID.String())
 
 		assert.NoError(t, h.GetBalance(c))
 		assert.Equal(t, http.StatusOK, rec.Code)
@@ -92,7 +94,7 @@ func TestHandler(t *testing.T) {
 
 	t.Run("GetBalanceInvalidID", func(t *testing.T) {
 		h := &Handler{uc: nil}
-		req := httptest.NewRequest(http.MethodGet, "/?id=uuid", nil)
+		req := httptest.NewRequest(http.MethodGet, "/uuid", nil)
 		c := e.NewContext(req, httptest.NewRecorder())
 
 		err := h.GetBalance(c)
@@ -106,8 +108,10 @@ func TestHandler(t *testing.T) {
 		h := &Handler{uc: m}
 		m.On("GetWallet", mockID).Return(nil, domain.ErrNotFound)
 
-		req := httptest.NewRequest(http.MethodGet, "/?id="+mockID.String(), nil)
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		c := e.NewContext(req, httptest.NewRecorder())
+		c.SetParamNames("id")
+		c.SetParamValues(mockID.String())
 
 		err := h.GetBalance(c)
 		he, ok := err.(*echo.HTTPError)

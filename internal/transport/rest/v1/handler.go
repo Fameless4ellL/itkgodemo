@@ -39,7 +39,7 @@ func (h *Handler) DeleteWallet(c echo.Context) error {
 }
 
 func (h *Handler) GetBalance(c echo.Context) error {
-	id, err := uuid.Parse(c.QueryParam("id"))
+	id, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, domain.ErrInvalidID)
 	}

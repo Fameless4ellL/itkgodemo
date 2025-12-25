@@ -32,9 +32,9 @@ func New() *gorm.DB {
 		PrepareStmt:            true,
 	})
 	sql, err := db.DB()
-	sql.SetMaxIdleConns(20)
+	sql.SetMaxIdleConns(200)
 	sql.SetMaxOpenConns(200)
-	sql.SetConnMaxLifetime(time.Hour)
+	sql.SetConnMaxLifetime(5 * time.Minute)
 	if err != nil {
 		logger.Log.Fatal("failed to connect database:", err)
 	}

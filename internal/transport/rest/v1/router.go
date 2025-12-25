@@ -12,9 +12,9 @@ func NewWalletRoutes(V1 *echo.Group, t *usecase.WalletUseCase) {
 	h := NewHandler(t)
 
 	if config.Debug {
-		V1.POST("/wallet", h.CreateWallet)
+		V1.POST("/wallets", h.CreateWallet)
 		V1.DELETE("/wallet", h.DeleteWallet)
 	}
-	V1.GET("/wallet", h.Operation)
-	V1.POST("/wallets/:id", h.GetBalance)
+	V1.POST("/wallet", h.Operation)
+	V1.GET("/wallets/:id", h.GetBalance)
 }

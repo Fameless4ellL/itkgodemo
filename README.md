@@ -1,6 +1,5 @@
 # itk wallet service
 Go microservice for managing wallet balances.
-Built with a focus on strict financial accuracy, high concurrency (1000+ RPS), and clean architectural patterns.
 
  Tech Stack
  * Language: Go 1.21+
@@ -26,9 +25,10 @@ The API will be available at http://localhost:8080.
 📝 API Specification
 1. Perform Operation
 ```
-POST /api/v1/wallets/:id
+POST /api/v1/wallet
 Request Body:
 {
+  "id": "uuid",
   "type": "DEPOSIT",
   "amount": 150
 }
@@ -38,6 +38,10 @@ Request Body:
 2. Get Balance
 ```
 GET /api/v1/wallet?id={uuid}
+```
+3. Create Wallet
+```
+POST /api/v1/wallets
 ```
  
 

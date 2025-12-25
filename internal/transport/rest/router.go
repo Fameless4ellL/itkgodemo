@@ -3,6 +3,7 @@ package rest
 import (
 	"itkdemo/internal/transport/rest/middleware"
 	"itkdemo/internal/usecase"
+	"itkdemo/pkg/config"
 
 	"github.com/labstack/echo/v4"
 
@@ -10,7 +11,9 @@ import (
 )
 
 func NewRouter(app *echo.Echo, t *usecase.WalletUseCase) {
-	app.Use(middleware.Logging)
+	if config.Debug {
+		app.Use(middleware.Logging)
+	}
 	app.Use(middleware.Recover)
 
 	apiV1Group := app.Group("/api/v1")
