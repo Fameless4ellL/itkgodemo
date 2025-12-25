@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:latest
+    command: postgres -c 'max_connections=300'
+    environment:
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-postgres}
+      - POSTGRES_DB=${DB_NAME:-postgres}
+    env_file:
+      - ./.env
+    volumes:
+      - postgresql-data:/var/lib/postgresql
+        - ./.env:/app/.env
+    restart: on-failure
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    restart: unless-stopped
+    ports:
+      - ${PORT:-8080}:${PORT:-8080}
+    env_file:
+      - ./.env
+    volumes:
+      - ./.env:/app/.env
+
+volumes:
+  postgresql-data:
