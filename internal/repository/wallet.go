@@ -27,9 +27,8 @@ func (p *Postgres) GetByID(id uuid.UUID) (*domain.Wallet, error) {
 	return &wallet, nil
 }
 
-func (p *Postgres) Update(wallet *domain.Wallet) error {
-	return p.db.Model(&wallet).Update("balance", wallet.Balance).Error
-
+func (p *Postgres) Update(id uuid.UUID, amount int64) error {
+	return p.db.Model(&domain.Wallet{ID: id}).Where("balance >= ?", 0).UpdateColumn("balance", gorm.Expr("balance + ?", amount)).Error
 }
 
 func (p *Postgres) Delete(id uuid.UUID) error {

@@ -32,7 +32,7 @@ func NewWallet() *Wallet {
 type WalletRepository interface {
 	Create(wallet *Wallet) error
 	GetByID(uuid.UUID) (*Wallet, error)
-	Update(wallet *Wallet) error
+	Update(id uuid.UUID, amount int64) error
 	Delete(id uuid.UUID) error
 }
 

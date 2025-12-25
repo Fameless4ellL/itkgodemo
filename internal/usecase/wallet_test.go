@@ -29,8 +29,8 @@ func (m *MockRepo) Delete(id uuid.UUID) error {
 	return args.Error(0)
 }
 
-func (m *MockRepo) Update(wallet *domain.Wallet) error {
-	args := m.Called(wallet)
+func (m *MockRepo) Update(id uuid.UUID, amount int64) error {
+	args := m.Called(id, amount)
 	return args.Error(0)
 }
 

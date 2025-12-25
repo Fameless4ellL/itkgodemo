@@ -56,7 +56,6 @@ func (u *WalletUseCase) UpdateWallet(op *domain.Operation) error {
 	if op.Type == domain.Withdraw {
 		op.Amount = -op.Amount
 	}
-	wallet.Balance += op.Amount
 
-	return u.repo.Update(wallet)
+	return u.repo.Update(wallet.ID, op.Amount)
 }

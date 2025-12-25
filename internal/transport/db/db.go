@@ -5,6 +5,7 @@ import (
 	"itkdemo/internal/transport/db/model"
 	"itkdemo/pkg/config"
 	logger "itkdemo/pkg/log"
+	"time"
 
 	_ "github.com/joho/godotenv/autoload"
 	"gorm.io/driver/postgres" // psx driver
@@ -26,7 +27,14 @@ func New() *gorm.DB {
 		config.DBName,
 		config.DBPort,
 	)
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		SkipDefaultTransaction: true,
+		PrepareStmt:            true,
+	})
+	sql, err := db.DB()
+	sql.SetMaxIdleConns(20)
+	sql.SetMaxOpenConns(200)
+	sql.SetConnMaxLifetime(time.Hour)
 	if err != nil {
 		logger.Log.Fatal("failed to connect database:", err)
 	}

@@ -83,7 +83,7 @@ func TestPostgres_CRUD(t *testing.T) {
 		mock.ExpectCommit()
 
 		wallet.Balance = 250
-		err := repo.Update(wallet)
+		err := repo.Update(wallet.ID, 1)
 		assert.NoError(t, err)
 	})
 
