@@ -35,3 +35,10 @@ type WalletRepository interface {
 	Update(wallet *Wallet) error
 	Delete(id uuid.UUID) error
 }
+
+type WalletUseCase interface {
+	CreateWallet() (*Wallet, error)
+	GetWallet(id uuid.UUID) (*Wallet, error)
+	UpdateWallet(*Operation) error
+	DeleteWallet(id uuid.UUID) error
+}

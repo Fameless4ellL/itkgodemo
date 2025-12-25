@@ -2,7 +2,6 @@ package v1
 
 import (
 	"itkdemo/internal/domain"
-	"itkdemo/internal/usecase"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -10,10 +9,10 @@ import (
 )
 
 type Handler struct {
-	uc *usecase.WalletUseCase
+	uc domain.WalletUseCase
 }
 
-func NewHandler(uc *usecase.WalletUseCase) *Handler {
+func NewHandler(uc domain.WalletUseCase) *Handler {
 	return &Handler{uc: uc}
 }
 

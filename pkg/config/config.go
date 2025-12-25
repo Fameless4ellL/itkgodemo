@@ -13,7 +13,7 @@ var (
 	DBUser     string
 	DBPassword string
 	DBName     string
-	DBPort     string = "5432"
+	DBPort     string
 	Port       int
 	Debug      bool
 )
