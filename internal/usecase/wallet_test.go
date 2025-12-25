@@ -109,7 +109,7 @@ func TestUpdateWallet(t *testing.T) {
 			repo := new(MockRepo)
 
 			repo.On("GetByID", mock.Anything).Return(&domain.Wallet{ID: tt.wallet.WalletID, Balance: tt.wantBalance}, tt.wantErr)
-			repo.On("Update", mock.Anything).Return(nil)
+			repo.On("Update", mock.Anything, mock.Anything).Return(nil)
 
 			uc := NewWalletUseCase(repo)
 			err := uc.UpdateWallet(tt.wallet)
