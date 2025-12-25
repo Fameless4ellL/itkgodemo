@@ -77,7 +77,7 @@ func TestUpdateWallet(t *testing.T) {
 			wallet: &domain.Operation{
 				WalletID: uuid.Nil,
 				Amount:   100,
-				Type:     4,
+				Type:     "TEST",
 			},
 			wantBalance: 900,
 			wantErr:     domain.ErrInvalidOperationType,

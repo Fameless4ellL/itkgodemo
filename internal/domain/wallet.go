@@ -4,11 +4,11 @@ import (
 	"github.com/google/uuid"
 )
 
-type OperationType int
+type OperationType string
 
 const (
-	Deposit OperationType = iota + 1
-	Withdraw
+	Deposit  OperationType = "DEPOSIT"
+	Withdraw OperationType = "WITHDRAW"
 )
 
 type Operation struct {
