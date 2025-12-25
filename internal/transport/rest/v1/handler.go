@@ -52,15 +52,10 @@ func (h *Handler) GetBalance(c echo.Context) error {
 }
 
 func (h *Handler) Operation(c echo.Context) error {
-	uid, err := uuid.Parse(c.Param("id"))
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, domain.ErrInvalidID)
-	}
 	u := new(domain.Operation)
 	if err := c.Bind(u); err != nil {
 		return c.String(http.StatusBadRequest, "bad request")
 	}
-	u.WalletID = uid
 	if err := h.uc.UpdateWallet(u); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}

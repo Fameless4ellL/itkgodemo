@@ -25,7 +25,7 @@ func TestNewWalletRoutes(t *testing.T) {
 			method string
 			path   string
 		}{
-			{http.MethodPost, "/api/v1/wallets"},
+			{http.MethodPost, "/api/v1/wallet"},
 			{http.MethodDelete, "/api/v1/wallet"},
 			{http.MethodGet, "/api/v1/wallet"},
 			{http.MethodPost, "/api/v1/wallets/:id"},

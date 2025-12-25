@@ -119,9 +119,9 @@ func TestHandler(t *testing.T) {
 		m := new(MockWalletUseCase)
 		h := &Handler{uc: m}
 
-		op := domain.Operation{Amount: 1000, Type: domain.Withdraw}
+		op := domain.Operation{WalletID: mockID, Amount: 1000, Type: domain.Withdraw}
 		m.On("UpdateWallet", mock.MatchedBy(func(o *domain.Operation) bool {
-			return o.WalletID == mockID && o.Amount == 1000
+			return o.WalletID == mockID && o.Amount == 1000 && o.Type == domain.Withdraw
 		})).Return(nil)
 
 		body, _ := json.Marshal(op)
@@ -130,8 +130,6 @@ func TestHandler(t *testing.T) {
 		rec := httptest.NewRecorder()
 
 		c := e.NewContext(req, rec)
-		c.SetParamNames("id")
-		c.SetParamValues(mockID.String())
 
 		assert.NoError(t, h.Operation(c))
 		assert.Equal(t, http.StatusOK, rec.Code)
@@ -144,18 +142,19 @@ func TestHandler(t *testing.T) {
 		rec := httptest.NewRecorder()
 
 		c := e.NewContext(req, rec)
-		c.SetParamNames("id")
-		c.SetParamValues(mockID.String())
 
 		assert.NoError(t, h.Operation(c))
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
 	})
 
-	t.Run("OperationInvalidID", func(t *testing.T) {
+	t.Run("OperationBadRequest", func(t *testing.T) {
 		m := new(MockWalletUseCase)
 		h := &Handler{uc: m}
 
-		op := domain.Operation{Amount: 1000, Type: domain.Withdraw}
+		op := domain.Operation{WalletID: mockID, Amount: 1000, Type: domain.Withdraw}
+		m.On("UpdateWallet", mock.MatchedBy(func(o *domain.Operation) bool {
+			return o.WalletID == mockID && o.Amount == 1000 && o.Type == domain.Withdraw
+		})).Return(domain.ErrInsufficientBalance)
 
 		body, _ := json.Marshal(op)
 		req := httptest.NewRequest(http.MethodPost, "/", bytes.NewBuffer(body))
@@ -163,8 +162,6 @@ func TestHandler(t *testing.T) {
 		rec := httptest.NewRecorder()
 
 		c := e.NewContext(req, rec)
-		c.SetParamNames("id")
-		c.SetParamValues("uuid")
 
 		err := h.Operation(c)
 		he, ok := err.(*echo.HTTPError)
@@ -172,7 +169,7 @@ func TestHandler(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, he.Code)
 	})
 
-	t.Run("OperationBadRequest", func(t *testing.T) {
+	t.Run("DeleteBadRequest", func(t *testing.T) {
 		m := new(MockWalletUseCase)
 		h := &Handler{uc: m}
 
@@ -190,7 +187,7 @@ func TestHandler(t *testing.T) {
 		c.SetParamNames("id")
 		c.SetParamValues(mockID.String())
 
-		err := h.Operation(c)
+		err := h.DeleteWallet(c)
 		he, ok := err.(*echo.HTTPError)
 		assert.True(t, ok)
 		assert.Equal(t, http.StatusBadRequest, he.Code)

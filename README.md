@@ -25,17 +25,21 @@ docker-compose up --build
 The API will be available at http://localhost:8080.
 📝 API Specification
 1. Perform Operation
-POST /api/v1/wallet/:id/operation
+```
+POST /api/v1/wallets/:id
 Request Body:
 {
-  "type": "with",
-  "amount": "150.75"
+  "type": "DEPOSIT",
+  "amount": 150
 }
-
- * type: Supports dep (deposit) and with (withdraw).
+```
+ * type: DEPOSIT or WITHDRAW.
  * amount: String format to maintain precision during transmission.
 2. Get Balance
+```
 GET /api/v1/wallet?id={uuid}
+```
+ 
 
 # config.env
 | Var | Description | Default Value |
