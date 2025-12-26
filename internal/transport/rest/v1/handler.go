@@ -54,11 +54,11 @@ func (h *Handler) GetBalance(c echo.Context) error {
 func (h *Handler) Operation(c echo.Context) error {
 	u := new(domain.Operation)
 	if err := c.Bind(u); err != nil {
-		return c.String(http.StatusBadRequest, "bad request")
+		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
 	if err := h.uc.UpdateWallet(u); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err)
 	}
-	c.JSON(http.StatusOK, u)
+	c.JSON(http.StatusOK, map[string]string{"status": "success"})
 	return nil
 }

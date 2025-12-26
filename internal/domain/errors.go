@@ -10,4 +10,5 @@ var (
 	ErrInvalidOperation     = errors.New("invalid operation")
 	ErrInsufficientBalance  = errors.New("insufficient balance")
 	ErrInvalidOperationType = errors.New("invalid operation type")
+	ErrTooBusy              = errors.New("too busy")
 )

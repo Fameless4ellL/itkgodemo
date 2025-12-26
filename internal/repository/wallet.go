@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"itkdemo/internal/domain"
 	"time"
 
@@ -16,7 +17,7 @@ type Postgres struct {
 func NewPostgres(db *gorm.DB) *Postgres {
 	repo := &Postgres{
 		db:   db,
-		task: make(chan domain.Task, 5000),
+		task: make(chan domain.Task, 1),
 	}
 
 	go repo.Run()
@@ -38,14 +39,21 @@ func (p *Postgres) GetByID(id uuid.UUID) (*domain.Wallet, error) {
 
 func (p *Postgres) Update(id uuid.UUID, amount int64) error {
 	t := make(chan error, 1)
-
-	p.task <- domain.Task{
+	task := domain.Task{
 		ID:     id,
 		Amount: amount,
 		Resp:   t,
 	}
 
-	return <-t
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	select {
+	case p.task <- task:
+		return <-t
+	case <-ctx.Done():
+		return domain.ErrTooBusy
+	}
 }
 
 func (p *Postgres) Delete(id uuid.UUID) error {
