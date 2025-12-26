@@ -17,7 +17,7 @@ type Postgres struct {
 func NewPostgres(db *gorm.DB) *Postgres {
 	repo := &Postgres{
 		db:   db,
-		task: make(chan domain.Task, 1),
+		task: make(chan domain.Task, 5000),
 	}
 
 	go repo.Run()
