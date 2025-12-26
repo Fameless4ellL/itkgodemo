@@ -22,6 +22,12 @@ type Wallet struct {
 	Balance int64     `json:"balance"`
 }
 
+type Task struct {
+	ID     uuid.UUID
+	Amount int64
+	Resp   chan error
+}
+
 func NewWallet() *Wallet {
 	return &Wallet{
 		ID:      uuid.New(),
