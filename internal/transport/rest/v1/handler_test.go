@@ -147,8 +147,10 @@ func TestHandler(t *testing.T) {
 
 		c := e.NewContext(req, rec)
 
-		assert.NoError(t, h.Operation(c))
-		assert.Equal(t, http.StatusBadRequest, rec.Code)
+		err := h.Operation(c)
+		he, ok := err.(*echo.HTTPError)
+		assert.True(t, ok)
+		assert.Equal(t, http.StatusBadRequest, he.Code)
 	})
 
 	t.Run("OperationBadRequest", func(t *testing.T) {

@@ -46,16 +46,9 @@ func (u *WalletUseCase) UpdateWallet(op *domain.Operation) error {
 	if op.Type != domain.Deposit && op.Type != domain.Withdraw {
 		return domain.ErrInvalidOperationType
 	}
-	wallet, err := u.repo.GetByID(op.WalletID)
-	if err != nil {
-		return err
-	}
-	if op.Type == domain.Withdraw && wallet.Balance < op.Amount {
-		return domain.ErrInsufficientBalance
-	}
 	if op.Type == domain.Withdraw {
 		op.Amount = -op.Amount
 	}
 
-	return u.repo.Update(wallet.ID, op.Amount)
+	return u.repo.Update(op.WalletID, op.Amount)
 }

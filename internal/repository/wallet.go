@@ -87,23 +87,21 @@ func (p *Postgres) Batch(batch []domain.Task) {
 		totals[task.ID] += task.Amount
 	}
 
-	err := p.db.Transaction(func(tx *gorm.DB) error {
-		for id, amount := range totals {
-			if err := tx.Model(&domain.Wallet{ID: id}).Where("balance >= ?", 0).UpdateColumn("balance", gorm.Expr("balance + ?", amount)).Error; err != nil {
-				return err
-			}
-		}
-		return nil
-	})
+	err := make(map[uuid.UUID]error)
+	for id, amount := range totals {
+		res := p.db.
+			Model(&domain.Wallet{}).
+			Where("id = ? AND (balance + ?) >= 0", id, amount).
+			UpdateColumn("balance", gorm.Expr("balance + ?", amount))
 
-	if err != nil {
-		for _, task := range batch {
-			task.Resp <- err
+		if res.Error != nil {
+			err[id] = res.Error
+		} else if res.RowsAffected == 0 {
+			err[id] = domain.ErrInsufficientBalance
 		}
-		return
 	}
 
 	for _, task := range batch {
-		task.Resp <- nil
+		task.Resp <- err[task.ID]
 	}
 }

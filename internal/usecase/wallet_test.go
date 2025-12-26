@@ -53,16 +53,6 @@ func TestUpdateWallet(t *testing.T) {
 			wantErr:     nil,
 		},
 		{
-			name: "Invalid ID",
-			wallet: &domain.Operation{
-				WalletID: uuid.Nil,
-				Amount:   100,
-				Type:     domain.Deposit,
-			},
-			wantBalance: 900,
-			wantErr:     domain.ErrInvalidID,
-		},
-		{
 			name: "InsufficientBalance",
 			wallet: &domain.Operation{
 				WalletID: uuid.Nil,

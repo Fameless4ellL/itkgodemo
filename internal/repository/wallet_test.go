@@ -77,8 +77,8 @@ func TestPostgres_CRUD(t *testing.T) {
 
 	t.Run("UpdateWallet", func(t *testing.T) {
 		mock.ExpectBegin()
-		mock.ExpectExec(`UPDATE "wallets" SET`).
-			WithArgs(250, 0, walletID).
+		mock.ExpectExec(`UPDATE .*wallets.*SET.*balance.*`).
+			WithArgs(250, walletID, 250).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 
