@@ -26,7 +26,7 @@ func SetupTestDB(t *testing.T) (*Postgres, sqlmock.Sqlmock) {
 		t.Fatalf("failed to open gorm: %s", err)
 	}
 
-	return NewPostgres(gormDB), mock
+	return NewPostgres(gormDB, nil), mock
 }
 
 func TestPostgres_CRUD(t *testing.T) {

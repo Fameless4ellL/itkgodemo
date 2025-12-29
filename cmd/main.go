@@ -15,6 +15,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/dgraph-io/ristretto/v2"
 	"github.com/labstack/echo/v4"
 )
 
@@ -48,10 +49,18 @@ func main() {
 	// Create a done channel to signal when the shutdown is complete
 	done := make(chan bool, 1)
 
-	// Run graceful shutdown in a separate goroutine
+	cache, err := ristretto.NewCache(&ristretto.Config[string, int64]{
+		NumCounters: 1e7,
+		MaxCost:     1 << 30,
+		BufferItems: 64,
+	})
+	if err != nil {
+		logger.Log.Fatalf("Failed to create cache: %v", err)
+	}
+	defer cache.Close()
 
 	db := database.New()
-	repo := repository.NewPostgres(db)
+	repo := repository.NewPostgres(db, cache)
 	service := usecase.NewWalletUseCase(repo)
 
 	e := echo.New()

@@ -5,19 +5,25 @@ import (
 	"itkdemo/internal/domain"
 	"time"
 
+	"github.com/dgraph-io/ristretto/v2"
 	"github.com/google/uuid"
+	"golang.org/x/sync/singleflight"
 	"gorm.io/gorm"
 )
 
+var sfGroup singleflight.Group
+
 type Postgres struct {
-	db   *gorm.DB
-	task chan domain.Task
+	db    *gorm.DB
+	cache *ristretto.Cache[string, int64]
+	task  chan domain.Task
 }
 
-func NewPostgres(db *gorm.DB) *Postgres {
+func NewPostgres(db *gorm.DB, cache *ristretto.Cache[string, int64]) *Postgres {
 	repo := &Postgres{
-		db:   db,
-		task: make(chan domain.Task, 5000),
+		db:    db,
+		cache: cache,
+		task:  make(chan domain.Task, 5000),
 	}
 
 	go repo.Run()
@@ -30,11 +36,30 @@ func (p *Postgres) Create(wallet *domain.Wallet) error {
 }
 
 func (p *Postgres) GetByID(id uuid.UUID) (*domain.Wallet, error) {
-	var wallet domain.Wallet
-	if err := p.db.First(&wallet, "id = ?", id).Error; err != nil {
+	if val, found := p.cache.Get(id.String()); found {
+		return &domain.Wallet{
+			ID:      id,
+			Balance: val,
+		}, nil
+	}
+
+	// avoid spam
+	val, err, _ := sfGroup.Do(id.String(), func() (any, error) {
+		var wallet domain.Wallet
+		if err := p.db.First(&wallet, "id = ?", id).Error; err != nil {
+			return 0, err
+		}
+		p.cache.SetWithTTL(id.String(), wallet.Balance, 1, 5*time.Minute)
+		return wallet.Balance, nil
+	})
+
+	if err != nil {
 		return nil, err
 	}
-	return &wallet, nil
+	return &domain.Wallet{
+		ID:      id,
+		Balance: val.(int64),
+	}, nil
 }
 
 func (p *Postgres) Update(id uuid.UUID, amount int64) error {
@@ -98,7 +123,12 @@ func (p *Postgres) Batch(batch []domain.Task) {
 			err[id] = res.Error
 		} else if res.RowsAffected == 0 {
 			err[id] = domain.ErrInsufficientBalance
+		} else {
+			if val, found := p.cache.Get(id.String()); found {
+				p.cache.SetWithTTL(id.String(), val+amount, 1, 5*time.Minute)
+			}
 		}
+
 	}
 
 	for _, task := range batch {
