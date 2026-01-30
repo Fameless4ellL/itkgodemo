@@ -1,5 +1,6 @@
 # itk wallet service
 Go microservice for managing wallet balances.
+tested and becnhmarked on k6 under 10k rps
 
  Tech Stack
  * Language: Go 1.21+
@@ -22,7 +23,7 @@ docker-compose up --build
 ```
 
 The API will be available at http://localhost:8080.
-📝 API Specification
+API Specification
 1. Perform Operation
 ```
 POST /api/v1/wallet
